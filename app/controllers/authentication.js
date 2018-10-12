@@ -34,53 +34,70 @@ export function login (req, res) {
 //========================================
 // Registration Route
 //========================================
-export function register (req, res, next) {
-  // Check for registration errors
-  const email = req.body.email;
-  const firstName = req.body.firstName;
-  const lastName = req.body.lastName;
-  const password = req.body.password;
-
-  // Return error if no email provided
-  if (!email) {
-    return res.status(422).send({ error: 'You must enter an email address.'});
-  }
-
-  // Return error if full name not provided
-  if (!firstName || !lastName) {
-    return res.status(422).send({ error: 'You must enter your full name.'});
-  }
-
-  // Return error if no password provided
-  if (!password) {
-    return res.status(422).send({ error: 'You must enter a password.' });
-  }
-
-  User.findOne({ email: email }, function(err, existingUser) {
-    if (err) { return next(err); }
-
-    // If user is not unique, return error
-    if (existingUser) {
-      return res.status(422).send({ error: 'That email address is already in use.' });
+export async function register (req, res) {
+  try {
+    // Check for registration errors
+    const email = req.body.email;
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
+    const password = req.body.password;
+    // Return error if no email provided
+    if (!email) {
+      return res.status(422).send({ error: 'You must enter an email address.'});
+    }
+    // Return error if full name not provided
+    if (!firstName || !lastName) {
+      return res.status(422).send({ error: 'You must enter your full name.'});
+    }
+    // Return error if no password provided
+    if (!password) {
+      return res.status(422).send({ error: 'You must enter a password.' });
     }
 
-    // If email is unique and password was provided, create account
-    let user = new User({
-      email: email,
-      password: password,
-      name: { firstName: firstName, lastName: lastName }
-    });
+    let user = await checkExistingUser(email, password, firstName, lastName);
+    let result = await saveUserToDb(res, user);
+    res.status(201).json(result);
+  }
+  catch (err) {
+    return res.status(422).send({ error: err });
+  }
+}
 
-    user.save(function(err, user) {
-      if (err) { return next(err); }
-
-      // Respond with JWT if user was created
-      let userInfo = setUserInfo(user);
-
-      res.status(201).json({
-        token: 'JWT ' + generateToken(userInfo),
-        user: userInfo
+//= Helper functions ===================
+function checkExistingUser (email, password, firstName, lastName) {
+  return new Promise((resolve, reject) => {
+    User.findOne({ email: email })
+      .then(existingUser => {
+        if (existingUser) {
+          reject({ error: 'That email address is already in use.' });
+        }
+        let user = new User({
+          email: email,
+          password: password,
+          name: { firstName: firstName, lastName: lastName }
+        });
+        resolve(user);
+      })
+      .catch(err => {
+        reject(err);
       });
-    });
+  });
+}
+
+function saveUserToDb (res, user) {
+  return new Promise ((resolve, reject) => {
+    user.save()
+      .then(() => {
+        let userInfo = setUserInfo(user);
+        resolve(
+          {
+            token: 'JWT ' + generateToken(userInfo),
+            user: userInfo
+          }
+        );
+      })
+      .catch(err => {
+        reject(err);
+      });
   });
 }

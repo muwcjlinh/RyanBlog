@@ -3,5 +3,7 @@
 import app from '../app/index';
 import config from '../config/main';
 
-app().listen(config.port);
+let server = app().listen(config.port);
 console.log('Your server is running on port 3000');
+
+export default server;

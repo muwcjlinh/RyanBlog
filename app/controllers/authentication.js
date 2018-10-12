@@ -69,7 +69,7 @@ function checkExistingUser (email, password, firstName, lastName) {
     User.findOne({ email: email })
       .then(existingUser => {
         if (existingUser) {
-          reject({ error: 'That email address is already in use.' });
+          reject('That email address is already in use.');
         }
         let user = new User({
           email: email,
@@ -79,6 +79,7 @@ function checkExistingUser (email, password, firstName, lastName) {
         resolve(user);
       })
       .catch(err => {
+        /* istanbul ignore next */
         reject(err);
       });
   });
@@ -97,6 +98,7 @@ function saveUserToDb (res, user) {
         );
       })
       .catch(err => {
+        /* istanbul ignore next */
         reject(err);
       });
   });

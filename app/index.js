@@ -9,7 +9,7 @@ export default () => {
   let app = express();
 
   // Database Connection
-  mongoose.connect(config.database);
+  mongoose.connect(config.database, { useNewUrlParser: true });
 
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());

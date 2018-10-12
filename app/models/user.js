@@ -12,7 +12,13 @@ const UserSchema = new Schema ({
   name: {
     firstName: { type: String, required: true },
     lastName: { type: String, required: true }
-  }
+  },
+  job: { type: String, required: false },
+  bio: { type: String, required: false },
+  phone: { type: String, required: false },
+  address: { type: String, required: false },
+  gender: { type: String, required: false },
+  birth: { type: String, required: false }
 },
 {
   timestamps: true

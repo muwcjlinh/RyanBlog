@@ -1,15 +1,17 @@
 import express from 'express';
 import * as AuthenticationController from '../controllers/authentication';
+import * as UserController from '../controllers/user';
 import passportService from '../middleware/passport'; /* eslint-disable-line */
 import passport from 'passport';
 
 // Middleware to require login/auth
-// const requireAuth = passport.authenticate('jwt', { session: false });
+const requireAuth = passport.authenticate('jwt', { session: false });
 const requireLogin = passport.authenticate('local', { session: false });
 
 export default (app) => {
   const apiRoutes = express.Router(),
-    authRoutes = express.Router();
+    authRoutes = express.Router(),
+    userRoutes = express.Router();
 
   // Set API group
   app.use('/api', apiRoutes);
@@ -21,12 +23,13 @@ export default (app) => {
   //= ========================
   //= Auth Routes
   //= ========================
-
-  // Set auth routes as subgroup/middleware to apiRoutes
   apiRoutes.use('/auth', authRoutes);
-  // Registration route
   authRoutes.post('/register', AuthenticationController.register);
-
-  // Login route
   authRoutes.post('/login', requireLogin, AuthenticationController.login);
+
+  //= ========================
+  //= User Routes
+  //= ========================
+  apiRoutes.use('/user', userRoutes);
+  userRoutes.post('/update', requireAuth, UserController.updateUserInfo);
 };

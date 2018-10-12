@@ -26,7 +26,7 @@ export function login (req, res) {
   let userInfo = setUserInfo(req.user);
 
   res.status(200).json({
-    token: 'JWT ' + generateToken(userInfo),
+    token: generateToken(userInfo),
     user: userInfo
   });
 }
@@ -92,7 +92,7 @@ function saveUserToDb (res, user) {
         let userInfo = setUserInfo(user);
         resolve(
           {
-            token: 'JWT ' + generateToken(userInfo),
+            token: generateToken(userInfo),
             user: userInfo
           }
         );

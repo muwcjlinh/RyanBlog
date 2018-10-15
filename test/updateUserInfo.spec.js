@@ -23,7 +23,7 @@ describe('Update User\'s info API', () => {
   });
 
   it('Update done!!!', done => {
-    agent.post('/api/user/update')
+    agent.put('/api/user/update')
       .type('form')
       .send({ email: email, password: password })
       .set('Authorization', 'Bearer ' + token)

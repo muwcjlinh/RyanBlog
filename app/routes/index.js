@@ -31,5 +31,5 @@ export default (app) => {
   //= User Routes
   //= ========================
   apiRoutes.use('/user', userRoutes);
-  userRoutes.post('/update', requireAuth, UserController.updateUserInfo);
+  userRoutes.put('/update', requireAuth, UserController.updateUserInfo);
 };

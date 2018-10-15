@@ -14,7 +14,7 @@ export function createCategory (req, res) {
     });
     saveCategory(category)
       .then(() => {
-        return createDetailCategory(category._id, req.body.firstColumn, req.body.secondColumn);
+        return saveDetailCategory(category._id, req.body.firstColumn, req.body.secondColumn);
       })
       .then((result) => {
         res.status(200).json({
@@ -22,6 +22,40 @@ export function createCategory (req, res) {
             _id: category._id,
             nameCategory: category.nameCategory,
             details: [result]
+          }
+        });
+      })
+      .catch(
+        /* istanbul ignore next */
+        err => {
+          res.status(422).json({ error: err });
+        }
+      );
+  }
+}
+
+//= ============================
+//= Create Detail for category
+//= ============================
+export function createDetailCategory (req, res) {
+  let nameCategory;
+  if (!req.body || !req.body.categoryId || !req.body.firstColumn || !req.body.secondColumn) {
+    return res.status(422).json({ error: 'Lack of input data' });
+  } else {
+    Category.findOne({ _id: req.body.categoryId })
+      .then(result => {
+        if (!result) {
+          res.status(422).json({ error: 'Wrong categoryId' });
+        }
+        nameCategory = result.nameCategory;
+        return saveDetailCategory(req.body.categoryId, req.body.firstColumn, req.body.secondColumn);
+      })
+      .then((result) => {
+        res.status(200).json({
+          category: {
+            _id: req.body.categoryId,
+            nameCategory: nameCategory,
+            details: result
           }
         });
       })
@@ -50,7 +84,7 @@ function saveCategory (category) {
   });
 }
 
-function createDetailCategory (categoryId, firstColumn, secondColumn) {
+function saveDetailCategory (categoryId, firstColumn, secondColumn) {
   return new Promise ((resolve, reject) => {
     let detailCategory = new DetailCategory ({
       categoryId: categoryId,

@@ -41,4 +41,5 @@ export default (app) => {
   //= ========================
   apiRoutes.use('/category', categoryRoutes);
   categoryRoutes.post('/create', requireAuth, CategoryController.createCategory);
+  categoryRoutes.post('/detail/create', requireAuth, CategoryController.createDetailCategory);
 };

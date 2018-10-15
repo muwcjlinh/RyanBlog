@@ -19,14 +19,18 @@ export function createCategory (req, res) {
       .then((result) => {
         res.status(200).json({
           category: {
+            _id: category._id,
             nameCategory: category.nameCategory,
             details: [result]
           }
         });
       })
-      .catch(err => {
-        res.status(422).json({ error: err });
-      });
+      .catch(
+        /* istanbul ignore next */
+        err => {
+          res.status(422).json({ error: err });
+        }
+      );
   }
 }
 
@@ -37,9 +41,12 @@ function saveCategory (category) {
       .then(result => {
         resolve(result);
       })
-      .catch(err => {
-        reject(err);
-      });
+      .catch(
+        /* istanbul ignore next */
+        err => {
+          reject(err);
+        }
+      );
   });
 }
 
@@ -54,8 +61,11 @@ function createDetailCategory (categoryId, firstColumn, secondColumn) {
       .then(result => {
         resolve(result);
       })
-      .catch(err => {
-        reject(err);
-      });
+      .catch(
+        /* istanbul ignore next */
+        err => {
+          reject(err);
+        }
+      );
   });
 }

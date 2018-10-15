@@ -14,7 +14,12 @@ export function createCategory (req, res) {
     });
     saveCategory(category)
       .then(() => {
-        return saveDetailCategory(category._id, req.body.firstColumn, req.body.secondColumn);
+        let detailCategory = new DetailCategory ({
+          categoryId: category._id,
+          firstColumn: req.body.firstColumn,
+          secondColumn: req.body.secondColumn
+        });
+        return saveDetailCategory(detailCategory);
       })
       .then((result) => {
         res.status(200).json({
@@ -38,26 +43,34 @@ export function createCategory (req, res) {
 //= Create Detail for category
 //= ============================
 export function createDetailCategory (req, res) {
-  let nameCategory;
   if (!req.body || !req.body.categoryId || !req.body.firstColumn || !req.body.secondColumn) {
     return res.status(422).json({ error: 'Lack of input data' });
   } else {
+    let nameCategory;
     Category.findOne({ _id: req.body.categoryId })
       .then(result => {
         if (!result) {
           res.status(422).json({ error: 'Wrong categoryId' });
+        } else {
+          nameCategory = result.nameCategory;
+          let detailCategory = new DetailCategory ({
+            categoryId: req.body.categoryId,
+            firstColumn: req.body.firstColumn,
+            secondColumn: req.body.secondColumn
+          });
+          return saveDetailCategory(detailCategory);
         }
-        nameCategory = result.nameCategory;
-        return saveDetailCategory(req.body.categoryId, req.body.firstColumn, req.body.secondColumn);
       })
       .then((result) => {
-        res.status(200).json({
-          category: {
-            _id: req.body.categoryId,
-            nameCategory: nameCategory,
-            details: result
-          }
-        });
+        if (result) {
+          res.status(200).json({
+            category: {
+              _id: req.body.categoryId,
+              nameCategory: nameCategory,
+              details: result
+            }
+          });
+        }
       })
       .catch(
         /* istanbul ignore next */
@@ -84,13 +97,13 @@ function saveCategory (category) {
   });
 }
 
-function saveDetailCategory (categoryId, firstColumn, secondColumn) {
+function saveDetailCategory (detailCategory) {
   return new Promise ((resolve, reject) => {
-    let detailCategory = new DetailCategory ({
-      categoryId: categoryId,
-      firstColumn: firstColumn,
-      secondColumn: secondColumn
-    });
+    // let detailCategory = new DetailCategory ({
+    //   categoryId: categoryId,
+    //   firstColumn: firstColumn,
+    //   secondColumn: secondColumn
+    // });
     detailCategory.save()
       .then(result => {
         resolve(result);

@@ -3,21 +3,26 @@ import User from '../models/user';
 //= =============================
 //= Update User's Info
 //= =============================
-export async function updateUserInfo (req, res) {
-  try {
-    let user = await findUser(req.user._id);
-    user.job = req.body.job;
-    user.bio = req.body.bio;
-    user.phone = req.body.phone;
-    user.address = req.body.address;
-    user.gender = req.body.gender;
-    user.birth = req.body.birth;
-    let result = await saveUser(user);
-    res.status(200).json({ info: result });
-  } catch (err) {
-    /* istanbul ignore next */
-    res.status(422).json({ error: err });
-  }
+export function updateUserInfo (req, res) {
+  findUser(req.user._id)
+    .then(function (user) {
+      user.job = req.body.job;
+      user.bio = req.body.bio;
+      user.phone = req.body.phone;
+      user.address = req.body.address;
+      user.gender = req.body.gender;
+      user.birth = req.body.birth;
+      return saveUser(user);
+    })
+    .then(result => {
+      res.status(200).json({ info: result });
+    })
+    .catch(
+      /* istanbul ignore next */
+      err => {
+        res.status(422).json({ error: err });
+      }
+    );
 }
 
 //= Helper functions ============
@@ -27,10 +32,12 @@ function findUser (userId) {
       .then((user) => {
         resolve(user);
       })
-      .catch(err => {
+      .catch(
         /* istanbul ignore next */
-        reject(err);
-      });
+        err => {
+          reject(err);
+        }
+      );
   });
 }
 
@@ -40,9 +47,11 @@ function saveUser (user) {
       .then(() => {
         resolve('User\'s info - Updated.');
       })
-      .catch(err => {
+      .catch(
         /* istanbul ignore next */
-        reject(err);
-      });
+        err => {
+          reject(err);
+        }
+      );
   });
 }

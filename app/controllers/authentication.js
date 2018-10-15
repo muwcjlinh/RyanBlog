@@ -34,33 +34,35 @@ export function login (req, res) {
 //========================================
 // Registration Route
 //========================================
-export async function register (req, res) {
-  try {
-    // Check for registration errors
-    const email = req.body.email;
-    const firstName = req.body.firstName;
-    const lastName = req.body.lastName;
-    const password = req.body.password;
-    // Return error if no email provided
-    if (!email) {
-      return res.status(422).send({ error: 'You must enter an email address.'});
-    }
-    // Return error if full name not provided
-    if (!firstName || !lastName) {
-      return res.status(422).send({ error: 'You must enter your full name.'});
-    }
-    // Return error if no password provided
-    if (!password) {
-      return res.status(422).send({ error: 'You must enter a password.' });
-    }
+export function register (req, res) {
+  // Check for registration errors
+  const email = req.body.email;
+  const firstName = req.body.firstName;
+  const lastName = req.body.lastName;
+  const password = req.body.password;
+  // Return error if no email provided
+  if (!email) {
+    return res.status(422).send({ error: 'You must enter an email address.'});
+  }
+  // Return error if full name not provided
+  if (!firstName || !lastName) {
+    return res.status(422).send({ error: 'You must enter your full name.'});
+  }
+  // Return error if no password provided
+  if (!password) {
+    return res.status(422).send({ error: 'You must enter a password.' });
+  }
 
-    let user = await checkExistingUser(email, password, firstName, lastName);
-    let result = await saveUserToDb(res, user);
-    res.status(201).json(result);
-  }
-  catch (err) {
-    return res.status(422).send({ error: err });
-  }
+  checkExistingUser(email, password, firstName, lastName)
+    .then(user => {
+      return saveUserToDb(user);
+    })
+    .then(result => {
+      return res.status(201).json(result);
+    })
+    .catch(err => {
+      return res.status(422).send({ error: err });
+    });
 }
 
 //= Helper functions ===================
@@ -78,14 +80,16 @@ function checkExistingUser (email, password, firstName, lastName) {
         });
         resolve(user);
       })
-      .catch(err => {
+      .catch(
         /* istanbul ignore next */
-        reject(err);
-      });
+        err => {
+          reject(err);
+        }
+      );
   });
 }
 
-function saveUserToDb (res, user) {
+function saveUserToDb (user) {
   return new Promise ((resolve, reject) => {
     user.save()
       .then(() => {
@@ -97,9 +101,11 @@ function saveUserToDb (res, user) {
           }
         );
       })
-      .catch(err => {
+      .catch(
         /* istanbul ignore next */
-        reject(err);
-      });
+        err => {
+          reject(err);
+        }
+      );
   });
 }

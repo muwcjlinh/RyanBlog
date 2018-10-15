@@ -1,6 +1,7 @@
 import express from 'express';
 import * as AuthenticationController from '../controllers/authentication';
 import * as UserController from '../controllers/user';
+import * as CategoryController from '../controllers/category';
 import passportService from '../middleware/passport'; /* eslint-disable-line */
 import passport from 'passport';
 
@@ -11,7 +12,8 @@ const requireLogin = passport.authenticate('local', { session: false });
 export default (app) => {
   const apiRoutes = express.Router(),
     authRoutes = express.Router(),
-    userRoutes = express.Router();
+    userRoutes = express.Router(),
+    categoryRoutes = express.Router();
 
   // Set API group
   app.use('/api', apiRoutes);
@@ -33,4 +35,10 @@ export default (app) => {
   apiRoutes.use('/user', userRoutes);
   userRoutes.get('/', requireAuth, UserController.getUserInfo);
   userRoutes.put('/update', requireAuth, UserController.updateUserInfo);
+
+  //= ========================
+  //= Category Routes
+  //= ========================
+  apiRoutes.use('/category', categoryRoutes);
+  categoryRoutes.post('/create', requireAuth, CategoryController.createCategory);
 };

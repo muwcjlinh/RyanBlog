@@ -1,22 +1,7 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/user';
 import config from '../../config/main';
-
-function generateToken(user) {
-  return jwt.sign(user, config.secret, {
-    expiresIn: 10080 // in seconds
-  });
-}
-
-// Set user info from request
-function setUserInfo(request) {
-  return {
-    _id: request._id,
-    firstName: request.name.firstName,
-    lastName: request.name.lastName,
-    email: request.email,
-  };
-}
+import { setUserInfo } from '../middleware/helpers';
 
 //========================================
 // Login Route
@@ -66,6 +51,12 @@ export function register (req, res) {
 }
 
 //= Helper functions ===================
+function generateToken(user) {
+  return jwt.sign(user, config.secret, {
+    expiresIn: 10080 // in seconds
+  });
+}
+
 function checkExistingUser (email, password, firstName, lastName) {
   return new Promise((resolve, reject) => {
     User.findOne({ email: email })

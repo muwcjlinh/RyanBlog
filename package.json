@@ -32,5 +32,8 @@
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "supertest": "^3.3.0"
+  },
+  "nyc": {
+    "exclude": "config/main.js"
   }
 }

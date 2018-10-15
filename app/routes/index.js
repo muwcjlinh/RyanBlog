@@ -31,5 +31,6 @@ export default (app) => {
   //= User Routes
   //= ========================
   apiRoutes.use('/user', userRoutes);
+  userRoutes.get('/', requireAuth, UserController.getUserInfo);
   userRoutes.put('/update', requireAuth, UserController.updateUserInfo);
 };

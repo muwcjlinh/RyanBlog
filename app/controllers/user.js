@@ -1,4 +1,5 @@
 import User from '../models/user';
+import { setUserInfo } from '../middleware/helpers';
 
 //= =============================
 //= Update User's Info
@@ -20,6 +21,23 @@ export function updateUserInfo (req, res) {
     .catch(
       /* istanbul ignore next */
       err => {
+        res.status(422).json({ error: err });
+      }
+    );
+}
+
+//= =============================
+//= Get User's Info
+//= =============================
+export function getUserInfo (req, res) {
+  findUser(req.user._id)
+    .then(user => {
+      res.status(200).json({ info: setUserInfo(user) });
+    })
+    .catch(
+      /* istanbul ignore next */
+      err => {
+        console.log(err);
         res.status(422).json({ error: err });
       }
     );

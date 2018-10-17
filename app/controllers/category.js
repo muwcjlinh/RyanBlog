@@ -141,6 +141,26 @@ export function updateDetailCategory (req, res) {
     );
 }
 
+//= ==========================
+//= Get all categories
+//= ==========================
+export function getAllCategories (req, res) {
+  Category.find({ owner: req.user._id })
+    .then(categories => {
+      if (!categories) {
+        res.status(422).json({ error: 'You do not have any categories.' });
+      } else {
+        res.status(200).json({ categories: categories });
+      }
+    })
+    .catch(
+      /* istanbul ignore next */
+      err => {
+        res.status(422).json({ error: err });
+      }
+    );
+}
+
 //= Helper functions
 function saveCategory (category) {
   return new Promise ((resolve, reject) => {

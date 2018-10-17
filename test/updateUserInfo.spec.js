@@ -13,7 +13,7 @@ describe('Update User\'s info API', () => {
   before(done => {
     agent.post('/api/auth/register')
       .type('form')
-      .send({ email: email, password: password, firstName: faker.random.word(), lastName: faker.random.word() })
+      .send({ email: email, password: password, firstName: 'firstName', lastName: 'lastName' })
       .end((err, user) => {
         expect(201);
         expect(err).to.not.exist;
@@ -25,12 +25,38 @@ describe('Update User\'s info API', () => {
   it('Update done!!!', done => {
     agent.put('/api/user/update')
       .type('form')
-      .send({ email: email, password: password })
+      .send({ email: email, password: password, firstName: 'firstName', lastName: 'lastName' })
       .set('Authorization', 'Bearer ' + token)
       .end((err, data) => {
         expect(200);
         expect(err).to.not.exist;
         expect(data.body.info).to.equal('User\'s info - Updated.');
+        done();
+      });
+  });
+
+  it('Lack of input data: firstName', done => {
+    agent.put('/api/user/update')
+      .type('form')
+      .send({ email: email, password: password, lastName: 'lastName' })
+      .set('Authorization', 'Bearer ' + token)
+      .end((err, data) => {
+        expect(200);
+        expect(err).to.not.exist;
+        expect(data.body.error).to.equal('You have to fill first name and last name.');
+        done();
+      });
+  });
+
+  it('Lack of input data: lastName', done => {
+    agent.put('/api/user/update')
+      .type('form')
+      .send({ email: email, password: password, firstName: 'firstName' })
+      .set('Authorization', 'Bearer ' + token)
+      .end((err, data) => {
+        expect(200);
+        expect(err).to.not.exist;
+        expect(data.body.error).to.equal('You have to fill first name and last name.');
         done();
       });
   });

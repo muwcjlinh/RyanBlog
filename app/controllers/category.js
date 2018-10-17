@@ -118,11 +118,10 @@ export function createDetailCategory (req, res) {
 export function updateDetailCategory (req, res) {
   DetailCategory.findOne({ _id: req.params.detailId, owner: req.user._id })
     .then(detail => {
-      console.log(detail);
       if (!detail) {
         res.status(422).json({ error: 'Can not find this detail to update.' });
       } else if (!req.body.firstColumn || !req.body.secondColumn) {
-        res.status(422).json({ error: 'You have to fill your name.' });
+        res.status(422).json({ error: 'You have to fill your detail.' });
       } else {
         detail.firstColumn = req.body.firstColumn;
         detail.secondColumn = req.body.secondColumn;

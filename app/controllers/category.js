@@ -149,9 +149,30 @@ export function getAllCategories (req, res) {
     .then(categories => {
       /* istanbul ignore if */
       if (!categories) {
-        res.status(422).json({ error: 'You do not have any categories.' });
+        res.status(422).json({ error: 'Something went wrong.' });
       } else {
         res.status(200).json({ categories: categories });
+      }
+    })
+    .catch(
+      /* istanbul ignore next */
+      err => {
+        res.status(422).json({ error: err });
+      }
+    );
+}
+
+//= ==========================
+//= Get all details of category
+//= ==========================
+export function getAllDetails (req, res) {
+  DetailCategory.find({ categoryId: req.params.categoryId, owner: req.user._id })
+    .then(details => {
+      /* istanbul ignore if */
+      if (!details) {
+        res.status(422).json({ error: 'Can not view details of this category' });
+      } else {
+        res.status(200).json({ categoryId: req.params.categoryId, details: details });
       }
     })
     .catch(

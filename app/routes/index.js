@@ -45,4 +45,5 @@ export default (app) => {
   categoryRoutes.put('/update/:categoryId', requireAuth, CategoryController.updateCategory);
   categoryRoutes.put('/detail/update/:detailId', requireAuth, CategoryController.updateDetailCategory);
   categoryRoutes.get('/all', requireAuth, CategoryController.getAllCategories);
+  categoryRoutes.get('/detail/:categoryId', requireAuth, CategoryController.getAllDetails);
 };

@@ -5,6 +5,9 @@ import { setUserInfo } from '../middleware/helpers';
 //= Update User's Info
 //= =============================
 export function updateUserInfo (req, res) {
+  if (!req.body.firstName || !req.body.lastName) {
+    return res.status(422).json({ error: 'You have to fill first name and last name.' });
+  }
   findUser(req.user._id)
     .then(function (user) {
       user.job = req.body.job;

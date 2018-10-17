@@ -15,6 +15,7 @@ export function createCategory (req, res) {
     saveCategory(category)
       .then(() => {
         let detailCategory = new DetailCategory ({
+          owner: req.user._id,
           categoryId: category._id,
           firstColumn: req.body.firstColumn,
           secondColumn: req.body.secondColumn
@@ -47,6 +48,8 @@ export function updateCategory(req, res) {
     .then(category => {
       if (!category) {
         res.status(422).json({ error: 'Can not find this category to update.' });
+      } else if (!req.body.nameCategory) {
+        res.status(422).json({ error: 'You have to fill name of category.' });
       } else {
         category.nameCategory = req.body.nameCategory;
         category.visible = req.body.visible;
@@ -81,6 +84,7 @@ export function createDetailCategory (req, res) {
         } else {
           nameCategory = result.nameCategory;
           let detailCategory = new DetailCategory ({
+            owner: req.user._id,
             categoryId: req.body.categoryId,
             firstColumn: req.body.firstColumn,
             secondColumn: req.body.secondColumn
@@ -106,6 +110,36 @@ export function createDetailCategory (req, res) {
         }
       );
   }
+}
+
+//= ===========================
+//= Update detail category
+//= ===========================
+export function updateDetailCategory (req, res) {
+  DetailCategory.findOne({ _id: req.params.detailId, owner: req.user._id })
+    .then(detail => {
+      console.log(detail);
+      if (!detail) {
+        res.status(422).json({ error: 'Can not find this detail to update.' });
+      } else if (!req.body.firstColumn || !req.body.secondColumn) {
+        res.status(422).json({ error: 'You have to fill your name.' });
+      } else {
+        detail.firstColumn = req.body.firstColumn;
+        detail.secondColumn = req.body.secondColumn;
+        return saveDetailCategory(detail);
+      }
+    })
+    .then(result => {
+      if (result) {
+        res.status(200).json({ info: result });
+      }
+    })
+    .catch(
+      /* istanbul ignore next */
+      err => {
+        res.status(422).json({ error: err });
+      }
+    );
 }
 
 //= Helper functions

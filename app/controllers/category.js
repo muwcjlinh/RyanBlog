@@ -147,6 +147,7 @@ export function updateDetailCategory (req, res) {
 export function getAllCategories (req, res) {
   Category.find({ owner: req.user._id })
     .then(categories => {
+      /* istanbul ignore if */
       if (!categories) {
         res.status(422).json({ error: 'You do not have any categories.' });
       } else {

@@ -40,6 +40,33 @@ export function createCategory (req, res) {
 }
 
 //= ============================
+//= Update category
+//= ============================
+export function updateCategory(req, res) {
+  Category.findOne({ _id: req.params.categoryId, owner: req.user._id })
+    .then(category => {
+      if (!category) {
+        res.status(422).json({ error: 'Can not find this category to update.' });
+      } else {
+        category.nameCategory = req.body.nameCategory;
+        category.visible = req.body.visible;
+        return saveCategory(category);
+      }
+    })
+    .then(result => {
+      if (result) {
+        res.status(200).json({ info: result });
+      }
+    })
+    .catch(
+      /* istanbul ignore next */
+      err => {
+        res.status(422).json({ error: err });
+      }
+    );
+}
+
+//= ============================
 //= Create Detail for category
 //= ============================
 export function createDetailCategory (req, res) {
@@ -99,11 +126,6 @@ function saveCategory (category) {
 
 function saveDetailCategory (detailCategory) {
   return new Promise ((resolve, reject) => {
-    // let detailCategory = new DetailCategory ({
-    //   categoryId: categoryId,
-    //   firstColumn: firstColumn,
-    //   secondColumn: secondColumn
-    // });
     detailCategory.save()
       .then(result => {
         resolve(result);

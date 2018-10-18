@@ -21,8 +21,8 @@ describe('Login API', () => {
     agent.post('/api/auth/login')
       .type('form')
       .send({ email: email, password: password })
+      .expect(200)
       .end((err, data) => {
-        expect(200);
         expect(err).to.not.exist;
         expect(data.body.user.email).to.equal(email);
         done();

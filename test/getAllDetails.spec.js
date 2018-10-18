@@ -6,7 +6,7 @@ import faker from 'faker';
 const expect = chai.expect;
 const agent = request.agent(server);
 
-describe('Update category', () => {
+describe('Get all details of category', () => {
   let email = faker.random.alphaNumeric(20),
     password = faker.random.alphaNumeric(10);
   let token, categoryId;
@@ -14,54 +14,40 @@ describe('Update category', () => {
     agent.post('/api/auth/register')
       .type('form')
       .send({ email: email, password: password, firstName: faker.random.word(), lastName: faker.random.word() })
-      .expect(201)
       .end((err, user) => {
+        expect(201);
         expect(err).to.not.exist;
         token = user.body.token;
         agent.post('/api/category/create')
           .set('Authorization', 'Bearer ' + token)
           .send({ nameCategory: faker.random.word(), firstColumn: faker.random.word(), secondColumn: faker.random.word() })
-          .expect(200)
           .end((err, data) => {
-            expect(err).to.not.exist;
+            expect(200);
             categoryId = data.body.category._id;
+            expect(err).to.not.exist;
             done();
           });
       });
   });
 
-  it('Update done!!!', done => {
-    agent.put('/api/category/update/' + categoryId)
+  it('Get done!!!', done => {
+    agent.get('/api/category/detail/' + categoryId)
       .set('Authorization', 'Bearer ' + token)
-      .send({ nameCategory: 'Test Category' })
       .expect(200)
       .end((err, data) => {
+        expect(data.body.details.length).to.equal(1);
         expect(err).to.not.exist;
-        expect(data.body.info.nameCategory).to.equal('Test Category');
         done();
       });
   });
 
-  it('Can not update other\'s category', done => {
-    agent.put('/api/category/update/5bc6e97a9e6d23212b01a123')
+  it('Can not get details of another\'s category', done => {
+    agent.get('/api/category/detail/5bc7e6ac273c602105123123')
       .set('Authorization', 'Bearer ' + token)
-      .send({ nameCategory: 'Test Category' })
       .expect(422)
       .end((err, data) => {
+        expect(data.body.error).to.equal('Can not view details of this category');
         expect(err).to.not.exist;
-        expect(data.body.error).to.equal('Can not find this category to update.');
-        done();
-      });
-  });
-
-  it('Lack of input data: nameCategory', done => {
-    agent.put('/api/category/update/' + categoryId)
-      .set('Authorization', 'Bearer ' + token)
-      .send({ visible: 'true' })
-      .expect(422)
-      .end((err, data) => {
-        expect(err).to.not.exist;
-        expect(data.body.error).to.equal('You have to fill name of category.');
         done();
       });
   });

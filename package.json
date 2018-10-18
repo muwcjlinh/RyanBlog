@@ -34,6 +34,6 @@
     "supertest": "^3.3.0"
   },
   "nyc": {
-    "exclude": "config/main.js"
+    "exclude": ["config/main.js", "test"]
   }
 }

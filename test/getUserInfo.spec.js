@@ -14,8 +14,8 @@ describe('Get User\'s info API', () => {
     agent.post('/api/auth/register')
       .type('form')
       .send({ email: email, password: password, firstName: faker.random.word(), lastName: faker.random.word() })
+      .expect(201)
       .end((err, user) => {
-        expect(201);
         expect(err).to.not.exist;
         token = user.body.token;
         done();
@@ -25,8 +25,8 @@ describe('Get User\'s info API', () => {
   it('Get done!!!', done => {
     agent.get('/api/user')
       .set('Authorization', 'Bearer ' + token)
+      .expect(200)
       .end((err) => {
-        expect(200);
         expect(err).to.not.exist;
         done();
       });

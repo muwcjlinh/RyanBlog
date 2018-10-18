@@ -14,8 +14,8 @@ describe('Create new category', () => {
     agent.post('/api/auth/register')
       .type('form')
       .send({ email: email, password: password, firstName: faker.random.word(), lastName: faker.random.word() })
+      .expect(201)
       .end((err, user) => {
-        expect(201);
         expect(err).to.not.exist;
         token = user.body.token;
         done();
@@ -26,8 +26,8 @@ describe('Create new category', () => {
     agent.post('/api/category/create')
       .set('Authorization', 'Bearer ' + token)
       .send({ nameCategory: 'Test Category', firstColumn: 'Test 1st column detail', secondColumn: 'Test 2nd column detail' })
+      .expect(200)
       .end((err, data) => {
-        expect(200);
         expect(err).to.not.exist;
         expect(data.body.category.nameCategory).to.equal('Test Category');
         expect(data.body.category.details[0].firstColumn).to.equal('Test 1st column detail');
@@ -39,8 +39,8 @@ describe('Create new category', () => {
   it('Lack of input data: body', done => {
     agent.post('/api/category/create')
       .set('Authorization', 'Bearer ' + token)
+      .expect(422)
       .end((err, data) => {
-        expect(422);
         expect(err).to.not.exist;
         expect(data.body.error).to.equal('Lack of input data');
         done();
@@ -51,8 +51,8 @@ describe('Create new category', () => {
     agent.post('/api/category/create')
       .set('Authorization', 'Bearer ' + token)
       .send({ nameCategory: '', firstColumn: 'Test 1st column detail', secondColumn: 'Test 2nd column detail' })
+      .expect(422)
       .end((err, data) => {
-        expect(422);
         expect(err).to.not.exist;
         expect(data.body.error).to.equal('Lack of input data');
         done();
@@ -63,8 +63,8 @@ describe('Create new category', () => {
     agent.post('/api/category/create')
       .set('Authorization', 'Bearer ' + token)
       .send({ nameCategory: 'Test Category', firstColumn: '', secondColumn: 'Test 2nd column detail' })
+      .expect(422)
       .end((err, data) => {
-        expect(422);
         expect(err).to.not.exist;
         expect(data.body.error).to.equal('Lack of input data');
         done();
@@ -75,8 +75,8 @@ describe('Create new category', () => {
     agent.post('/api/category/create')
       .set('Authorization', 'Bearer ' + token)
       .send({ nameCategory: 'Test Category', firstColumn: 'Test 1st column detail', secondColumn: '' })
+      .expect(422)
       .end((err, data) => {
-        expect(422);
         expect(err).to.not.exist;
         expect(data.body.error).to.equal('Lack of input data');
         done();

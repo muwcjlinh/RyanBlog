@@ -21,8 +21,8 @@ describe('Get all categories', () => {
         agent.post('/api/category/create')
           .set('Authorization', 'Bearer ' + token)
           .send({ nameCategory: faker.random.word(), firstColumn: faker.random.word(), secondColumn: faker.random.word() })
-          .end((err) => {
-            expect(200);
+          .expect(200)
+          .end((err) => {            
             expect(err).to.not.exist;
             done();
           });
@@ -32,12 +32,10 @@ describe('Get all categories', () => {
   it('Get done!!!', done => {
     agent.get('/api/category/all')
       .set('Authorization', 'Bearer ' + token)
+      .expect(200)
       .end((err) => {
-        expect(200);
         expect(err).to.not.exist;
         done();
       });
   });
-
-  // Need test case when do not have any categories yet
 });

@@ -14,15 +14,15 @@ describe('Update detail of category', () => {
     agent.post('/api/auth/register')
       .type('form')
       .send({ email: email, password: password, firstName: faker.random.word(), lastName: faker.random.word() })
+      .expect(201)
       .end((err, user) => {
-        expect(201);
         expect(err).to.not.exist;
         token = user.body.token;
         agent.post('/api/category/create')
           .set('Authorization', 'Bearer ' + token)
           .send({ nameCategory: faker.random.word(), firstColumn: faker.random.word(), secondColumn: faker.random.word() })
+          .expect(200)
           .end((err, data) => {
-            expect(200);
             expect(err).to.not.exist;
             detailId = data.body.category.details[0]._id;
             done();
@@ -34,9 +34,9 @@ describe('Update detail of category', () => {
     agent.put('/api/category/detail/update/' + detailId)
       .set('Authorization', 'Bearer ' + token)
       .send({ firstColumn: 'faker.random.word()', secondColumn: faker.random.word() })
+      .expect(200)
       .end((err, data) => {
         expect(data.body.info.firstColumn).to.equal('faker.random.word()');
-        expect(200);
         expect(err).to.not.exist;
         done();
       });
@@ -46,8 +46,8 @@ describe('Update detail of category', () => {
     agent.put('/api/category/detail/update/5bc6e97a9e6d23212b01a123')
       .set('Authorization', 'Bearer ' + token)
       .send({ firstColumn: 'Test Category', secondColumn: 'Test 2nd' })
+      .expect(422)
       .end((err, data) => {
-        expect(422);
         expect(err).to.not.exist;
         expect(data.body.error).to.equal('Can not find this detail to update.');
         done();
@@ -58,9 +58,9 @@ describe('Update detail of category', () => {
     agent.put('/api/category/detail/update/' + detailId)
       .set('Authorization', 'Bearer ' + token)
       .send({ secondColumn: faker.random.word() })
+      .expect(422)
       .end((err, data) => {
         expect(data.body.error).to.equal('You have to fill your detail.');
-        expect(200);
         expect(err).to.not.exist;
         done();
       });
@@ -70,9 +70,9 @@ describe('Update detail of category', () => {
     agent.put('/api/category/detail/update/' + detailId)
       .set('Authorization', 'Bearer ' + token)
       .send({ firstColumn: faker.random.word() })
+      .expect(422)
       .end((err, data) => {
         expect(data.body.error).to.equal('You have to fill your detail.');
-        expect(200);
         expect(err).to.not.exist;
         done();
       });

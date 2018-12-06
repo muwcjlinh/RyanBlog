@@ -12,15 +12,15 @@ export function createCategory (req, res) {
       owner: req.user._id,
       nameCategory: req.body.nameCategory
     });
-    saveCategory(category)
+    let detailCategory = new DetailCategory ({
+      owner: req.user._id,
+      categoryId: category._id,
+      firstColumn: req.body.firstColumn,
+      secondColumn: req.body.secondColumn
+    });
+    category.save()
       .then(() => {
-        let detailCategory = new DetailCategory ({
-          owner: req.user._id,
-          categoryId: category._id,
-          firstColumn: req.body.firstColumn,
-          secondColumn: req.body.secondColumn
-        });
-        return saveDetailCategory(detailCategory);
+        return detailCategory.save();
       })
       .then((result) => {
         res.status(200).json({
@@ -53,7 +53,7 @@ export function updateCategory(req, res) {
       } else {
         category.nameCategory = req.body.nameCategory;
         category.visible = req.body.visible;
-        return saveCategory(category);
+        return category.save();
       }
     })
     .then(result => {
@@ -89,7 +89,7 @@ export function createDetailCategory (req, res) {
             firstColumn: req.body.firstColumn,
             secondColumn: req.body.secondColumn
           });
-          return saveDetailCategory(detailCategory);
+          return detailCategory.save();
         }
       })
       .then((result) => {
@@ -125,7 +125,7 @@ export function updateDetailCategory (req, res) {
       } else {
         detail.firstColumn = req.body.firstColumn;
         detail.secondColumn = req.body.secondColumn;
-        return saveDetailCategory(detail);
+        return detail.save();
       }
     })
     .then(result => {
@@ -175,35 +175,4 @@ export function getAllDetails (req, res) {
         res.status(422).json({ error: err });
       }
     );
-}
-
-//= Helper functions
-function saveCategory (category) {
-  return new Promise ((resolve, reject) => {
-    category.save()
-      .then(result => {
-        resolve(result);
-      })
-      .catch(
-        /* istanbul ignore next */
-        err => {
-          reject(err);
-        }
-      );
-  });
-}
-
-function saveDetailCategory (detailCategory) {
-  return new Promise ((resolve, reject) => {
-    detailCategory.save()
-      .then(result => {
-        resolve(result);
-      })
-      .catch(
-        /* istanbul ignore next */
-        err => {
-          reject(err);
-        }
-      );
-  });
 }

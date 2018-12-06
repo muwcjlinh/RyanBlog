@@ -16,10 +16,10 @@ export function updateUserInfo (req, res) {
       user.address = req.body.address;
       user.gender = req.body.gender;
       user.birth = req.body.birth;
-      return saveUser(user);
+      return user.save();
     })
-    .then(result => {
-      res.status(200).json({ info: result });
+    .then(() => {
+      res.status(200).json({ info: 'User\'s info - Updated.' });
     })
     .catch(
       /* istanbul ignore next */
@@ -52,21 +52,6 @@ function findUser (userId) {
     User.findOne({ _id: userId })
       .then((user) => {
         resolve(user);
-      })
-      .catch(
-        /* istanbul ignore next */
-        err => {
-          reject(err);
-        }
-      );
-  });
-}
-
-function saveUser (user) {
-  return new Promise ((resolve, reject) => {
-    user.save()
-      .then(() => {
-        resolve('User\'s info - Updated.');
       })
       .catch(
         /* istanbul ignore next */
